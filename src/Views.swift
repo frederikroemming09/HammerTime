@@ -65,27 +65,28 @@ struct PreferencesView: View {
             
             // Touch ID Card (only if biometrics are supported on the device)
             if HammerTimeManager.shared.canUseBiometrics() {
-                Toggle(isOn: Binding(
-                    get: { HammerTimeManager.shared.isBiometricsEnabled },
-                    set: { HammerTimeManager.shared.setBiometricsEnabled($0) }
-                )) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "touchid")
-                            .font(.system(size: 14))
+                HStack(alignment: .center, spacing: 10) {
+                    Image(systemName: "touchid")
+                        .font(.system(size: 13))
+                        .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Touch ID Unlock")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.primary)
+                        Text("Unlock using biometrics or password.")
+                            .font(.system(size: 9))
                             .foregroundColor(.secondary)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Touch ID / Password Unlock")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(.primary)
-                            Text("Allow deactivating lock using Touch ID or your Mac's login password.")
-                                .font(.system(size: 10))
-                                .foregroundColor(.secondary)
-                        }
                     }
+                    Spacer()
+                    Toggle("", isOn: Binding(
+                        get: { HammerTimeManager.shared.isBiometricsEnabled },
+                        set: { HammerTimeManager.shared.setBiometricsEnabled($0) }
+                    ))
+                    .toggleStyle(.switch)
+                    .controlSize(.small)
+                    .labelsHidden()
                 }
-                .toggleStyle(.checkbox)
-                .padding(12)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(10)
                 .background(colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
                 .cornerRadius(10)
             }
