@@ -47,8 +47,8 @@ class HammerTimeManager: NSObject {
     
     var isBiometricsEnabled: Bool {
         if UserDefaults.standard.object(forKey: biometricsEnabledKey) == nil {
-            UserDefaults.standard.set(true, forKey: biometricsEnabledKey)
-            return true
+            UserDefaults.standard.set(false, forKey: biometricsEnabledKey)
+            return false
         }
         return UserDefaults.standard.bool(forKey: biometricsEnabledKey)
     }

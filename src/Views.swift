@@ -65,13 +65,20 @@ struct PreferencesView: View {
             
             // Touch ID Card (only if biometrics are supported on the device)
             if HammerTimeManager.shared.canUseBiometrics() {
-                HStack(alignment: .center, spacing: 8) {
+                HStack(alignment: .center, spacing: 6) {
                     Image(systemName: "touchid")
                         .font(.system(size: 14))
                         .foregroundColor(.secondary)
                     Text("Deactivate with Touch ID")
                         .font(.system(size: 12))
                         .foregroundColor(.primary)
+                    Button(action: showTouchIDInfo) {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: 11))
+                            .foregroundColor(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help("How to use Touch ID unlock")
                     Spacer()
                     Toggle("", isOn: Binding(
                         get: { HammerTimeManager.shared.isBiometricsEnabled },
@@ -246,6 +253,15 @@ struct PreferencesView: View {
                 }
             }
         }
+    }
+    
+    private func showTouchIDInfo() {
+        let alert = NSAlert()
+        alert.messageText = "How Touch ID Unlock Works"
+        alert.informativeText = "Because HammerTime blocks all keyboard and mouse inputs globally to secure your Mac, background apps cannot directly monitor the Touch ID sensor.\n\nTo use Touch ID:\n1. Lock HammerTime.\n2. When you return, click the screen or press the Spacebar or Return key.\n3. The warning overlay will appear, temporarily suspend input-swallowing, and display the macOS system Touch ID prompt on top.\n4. Scan your fingerprint to unlock!"
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "Got it")
+        alert.runModal()
     }
 }
 
