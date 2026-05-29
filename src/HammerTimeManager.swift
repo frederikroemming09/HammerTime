@@ -9,6 +9,7 @@ class HammerTimeManager: NSObject {
     
     private(set) var isLocked = false
     private(set) var isDeterrentOverlayVisible = false
+    private var isCapturingPhoto = false
     
     private var sleepAssertionToken: NSObjectProtocol?
     private var isSleepPrevented = false
@@ -183,6 +184,7 @@ class HammerTimeManager: NSObject {
         print("[Manager] Activating Invisible Lock...")
         isLocked = true
         isDeterrentOverlayVisible = false
+        isCapturingPhoto = false
         
         // Assert sleep prevention (prevent display and system sleep)
         preventSleep()
@@ -203,6 +205,7 @@ class HammerTimeManager: NSObject {
         print("[Manager] Deactivating Invisible Lock...")
         isLocked = false
         isDeterrentOverlayVisible = false
+        isCapturingPhoto = false
         
         // Stop CGEventTap input swallowing
         EventTapManager.shared.stop()
@@ -273,9 +276,9 @@ class HammerTimeManager: NSObject {
     }
     
     func captureIntruder(reason: String) {
-        guard isLocked && !isDeterrentOverlayVisible else { return }
+        guard isLocked && !isDeterrentOverlayVisible && !isCapturingPhoto else { return }
         print("[Manager] Intruder captured! Reason: \(reason)")
-        isDeterrentOverlayVisible = true
+        isCapturingPhoto = true
         
         // Play warning sound
         NSSound(named: "Basso")?.play()
@@ -284,6 +287,8 @@ class HammerTimeManager: NSObject {
         CameraManager.shared.capturePhoto { [weak self] image in
             DispatchQueue.main.async {
                 guard let self = self else { return }
+                self.isCapturingPhoto = false
+                self.isDeterrentOverlayVisible = true
                 
                 // Add entry to our history log
                 self.addHistoryEntry(reason: reason, image: image)
