@@ -28,6 +28,7 @@ swiftc \
   -framework SwiftUI \
   -framework AVFoundation \
   -framework IOKit \
+  -framework LocalAuthentication \
   -F Frameworks \
   -framework Sparkle \
   -Xlinker -rpath -Xlinker @executable_path/../Frameworks \

@@ -63,6 +63,33 @@ struct PreferencesView: View {
             .background(colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
             .cornerRadius(10)
             
+            // Touch ID Card (only if biometrics are supported on the device)
+            if HammerTimeManager.shared.canUseBiometrics() {
+                Toggle(isOn: Binding(
+                    get: { HammerTimeManager.shared.isBiometricsEnabled },
+                    set: { HammerTimeManager.shared.setBiometricsEnabled($0) }
+                )) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "touchid")
+                            .font(.system(size: 14))
+                            .foregroundColor(.secondary)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Touch ID / Password Unlock")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.primary)
+                            Text("Allow deactivating lock using Touch ID or your Mac's login password.")
+                                .font(.system(size: 10))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+                .toggleStyle(.checkbox)
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
+                .cornerRadius(10)
+            }
+            
             // Permissions Card
             VStack(alignment: .leading, spacing: 12) {
                 Text("SYSTEM PERMISSIONS")
@@ -279,15 +306,22 @@ struct DeterrentCardView: View {
             }
             
             if showUnlockInstructions {
-                VStack(spacing: 4) {
+                VStack(spacing: 6) {
                     Text("System is Locked")
                         .font(.subheadline)
                         .fontWeight(.bold)
                         .foregroundColor(.secondary)
                     
-                    Text("Type the secret keyphrase to unlock.")
-                        .font(.body)
-                        .foregroundColor(.secondary)
+                    if HammerTimeManager.shared.canUseBiometrics() && HammerTimeManager.shared.isBiometricsEnabled {
+                        Text("Type keyphrase, click screen, or press Space to use Touch ID.")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    } else {
+                        Text("Type the secret keyphrase to unlock.")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                    }
                 }
             }
         }

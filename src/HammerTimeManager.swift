@@ -2,6 +2,7 @@ import Cocoa
 import AVFoundation
 import SwiftUI
 import Carbon
+import LocalAuthentication
 
 class HammerTimeManager: NSObject {
     static let shared = HammerTimeManager()
@@ -13,6 +14,8 @@ class HammerTimeManager: NSObject {
     private var isSleepPrevented = false
     
     private let keyphraseKey = "HammerTimeSecretKeyphrase"
+    private let biometricsEnabledKey = "HammerTimeBiometricsEnabled"
+    private var isAuthenticatingWithBiometrics = false
     
     private var hotKeyRef: EventHotKeyRef?
     private var hotKeyHandler: EventHandlerRef?
@@ -40,6 +43,24 @@ class HammerTimeManager: NSObject {
         let trimmed = phrase.trimmingCharacters(in: .whitespacesAndNewlines)
         UserDefaults.standard.set(trimmed, forKey: keyphraseKey)
         print("[Manager] Keyphrase updated successfully.")
+    }
+    
+    var isBiometricsEnabled: Bool {
+        if UserDefaults.standard.object(forKey: biometricsEnabledKey) == nil {
+            UserDefaults.standard.set(true, forKey: biometricsEnabledKey)
+            return true
+        }
+        return UserDefaults.standard.bool(forKey: biometricsEnabledKey)
+    }
+    
+    func setBiometricsEnabled(_ enabled: Bool) {
+        UserDefaults.standard.set(enabled, forKey: biometricsEnabledKey)
+        print("[Manager] Biometrics enabled state set to: \(enabled)")
+    }
+    
+    func canUseBiometrics() -> Bool {
+        let context = LAContext()
+        return context.canEvaluatePolicy(.deviceOwnerAuthentication, error: nil)
     }
     
     func toggleLock() {
@@ -199,6 +220,52 @@ class HammerTimeManager: NSObject {
         NSSound(named: "Glass")?.play()
     }
     
+    func triggerTouchID(completion: ((Bool) -> Void)? = nil) {
+        guard isLocked else {
+            completion?(false)
+            return
+        }
+        
+        guard canUseBiometrics() && isBiometricsEnabled else {
+            completion?(false)
+            return
+        }
+        
+        guard !isAuthenticatingWithBiometrics else {
+            completion?(false)
+            return
+        }
+        
+        print("[Manager] Triggering biometric/password authentication. Temporarily suspending event tap...")
+        isAuthenticatingWithBiometrics = true
+        
+        // Stop event tap so the user can interact with the Touch ID dialog / password input
+        EventTapManager.shared.stop()
+        
+        let context = LAContext()
+        let reason = "Unlock HammerTime"
+        
+        context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: reason) { [weak self] success, error in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.isAuthenticatingWithBiometrics = false
+                
+                if success {
+                    print("[Manager] Biometric/Password authentication succeeded. Unlocking HammerTime.")
+                    self.deactivateLock()
+                    completion?(true)
+                } else {
+                    print("[Manager] Biometric/Password authentication failed or was canceled. Error: \(String(describing: error)). Re-enabling event tap.")
+                    // Re-enable event tap if we are still locked
+                    if self.isLocked {
+                        EventTapManager.shared.start()
+                    }
+                    completion?(false)
+                }
+            }
+        }
+    }
+    
     func captureIntruder(reason: String) {
         guard isLocked && !isDeterrentOverlayVisible else { return }
         print("[Manager] Intruder captured! Reason: \(reason)")
@@ -220,6 +287,13 @@ class HammerTimeManager: NSObject {
                 
                 // Display full-screen overlay (even if photo is nil, we display a fallback UI)
                 self.appDelegate?.showDeterrentOverlay(image: image)
+                
+                // Automatically trigger Touch ID if available and enabled
+                if self.canUseBiometrics() && self.isBiometricsEnabled {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.triggerTouchID()
+                    }
+                }
             }
         }
     }
