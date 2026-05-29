@@ -65,18 +65,13 @@ struct PreferencesView: View {
             
             // Touch ID Card (only if biometrics are supported on the device)
             if HammerTimeManager.shared.canUseBiometrics() {
-                HStack(alignment: .center, spacing: 10) {
+                HStack(alignment: .center, spacing: 8) {
                     Image(systemName: "touchid")
-                        .font(.system(size: 13))
+                        .font(.system(size: 14))
                         .foregroundColor(.secondary)
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text("Touch ID Unlock")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.primary)
-                        Text("Unlock using biometrics or password.")
-                            .font(.system(size: 9))
-                            .foregroundColor(.secondary)
-                    }
+                    Text("Deactivate with Touch ID")
+                        .font(.system(size: 12))
+                        .foregroundColor(.primary)
                     Spacer()
                     Toggle("", isOn: Binding(
                         get: { HammerTimeManager.shared.isBiometricsEnabled },
@@ -86,7 +81,7 @@ struct PreferencesView: View {
                     .controlSize(.small)
                     .labelsHidden()
                 }
-                .padding(10)
+                .padding(12)
                 .background(colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
                 .cornerRadius(10)
             }
