@@ -246,6 +246,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         deterrentWindows.removeAll()
     }
     
+    func setDeterrentWindowsLevel(_ level: NSWindow.Level) {
+        for window in deterrentWindows {
+            window.level = level
+        }
+    }
+    
     func showActivationConfetti() {
         closeConfettiWindow()
         

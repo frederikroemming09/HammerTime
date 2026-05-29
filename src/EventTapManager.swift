@@ -221,15 +221,13 @@ class EventTapManager: NSObject {
         ].contains(type)
         
         if isMouseEvent {
+            if type == .leftMouseDown || type == .rightMouseDown {
+                DispatchQueue.main.async {
+                    HammerTimeManager.shared.triggerTouchID()
+                }
+            }
             if !HammerTimeManager.shared.isDeterrentOverlayVisible {
                 trackMouseEvent(type: type, time: now)
-            } else {
-                // If overlay is up, a click (mouse down) triggers Touch ID
-                if type == .leftMouseDown || type == .rightMouseDown {
-                    DispatchQueue.main.async {
-                        HammerTimeManager.shared.triggerTouchID()
-                    }
-                }
             }
             // Swallow mouse events
             return nil
@@ -237,14 +235,12 @@ class EventTapManager: NSObject {
         
         if type == .keyDown {
             if let nsEvent = NSEvent(cgEvent: event) {
-                // If overlay is up, check if Space (49) or Return (36) is pressed to trigger Touch ID
-                if HammerTimeManager.shared.isDeterrentOverlayVisible {
-                    if nsEvent.keyCode == 49 || nsEvent.keyCode == 36 {
-                        DispatchQueue.main.async {
-                            HammerTimeManager.shared.triggerTouchID()
-                        }
-                        return nil // Swallow
+                // Check if Space (49) or Return (36) is pressed to trigger Touch ID directly
+                if nsEvent.keyCode == 49 || nsEvent.keyCode == 36 {
+                    DispatchQueue.main.async {
+                        HammerTimeManager.shared.triggerTouchID()
                     }
+                    return nil // Swallow
                 }
                 handleKeyPress(nsEvent: nsEvent, time: now)
             }

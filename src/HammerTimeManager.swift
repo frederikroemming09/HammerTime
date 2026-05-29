@@ -242,6 +242,9 @@ class HammerTimeManager: NSObject {
         // Stop event tap so the user can interact with the Touch ID dialog / password input
         EventTapManager.shared.stop()
         
+        // Lower deterrent window level to let Touch ID prompt display on top of it
+        self.appDelegate?.setDeterrentWindowsLevel(.floating)
+        
         let context = LAContext()
         let reason = "Unlock HammerTime"
         
@@ -249,6 +252,9 @@ class HammerTimeManager: NSObject {
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 self.isAuthenticatingWithBiometrics = false
+                
+                // Restore deterrent window level to .screenSaver to keep screen covered
+                self.appDelegate?.setDeterrentWindowsLevel(.screenSaver)
                 
                 if success {
                     print("[Manager] Biometric/Password authentication succeeded. Unlocking HammerTime.")
