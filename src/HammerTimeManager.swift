@@ -293,13 +293,6 @@ class HammerTimeManager: NSObject {
                 
                 // Display full-screen overlay (even if photo is nil, we display a fallback UI)
                 self.appDelegate?.showDeterrentOverlay(image: image)
-                
-                // Automatically trigger Touch ID if available and enabled
-                if self.canUseBiometrics() && self.isBiometricsEnabled {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        self.triggerTouchID()
-                    }
-                }
             }
         }
     }

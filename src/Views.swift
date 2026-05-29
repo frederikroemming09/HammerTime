@@ -65,21 +65,28 @@ struct PreferencesView: View {
             
             // Touch ID Card (only if biometrics are supported on the device)
             if HammerTimeManager.shared.canUseBiometrics() {
-                HStack(alignment: .center, spacing: 6) {
+                HStack(alignment: .center, spacing: 8) {
                     Image(systemName: "touchid")
                         .font(.system(size: 14))
                         .foregroundColor(.secondary)
-                    Text("Deactivate with Touch ID")
-                        .font(.system(size: 12))
-                        .foregroundColor(.primary)
-                    Button(action: showTouchIDInfo) {
-                        Image(systemName: "info.circle")
-                            .font(.system(size: 11))
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text("Deactivate with Touch ID")
+                                .font(.system(size: 12))
+                                .foregroundColor(.primary)
+                                .lineLimit(nil)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Text("Prompts on intruder screen after taking action.")
+                            .font(.system(size: 10))
                             .foregroundColor(.secondary)
+                            .lineLimit(nil)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
-                    .buttonStyle(.plain)
-                    .help("How to use Touch ID unlock")
+                    
                     Spacer()
+                    
                     Toggle("", isOn: Binding(
                         get: { HammerTimeManager.shared.isBiometricsEnabled },
                         set: { HammerTimeManager.shared.setBiometricsEnabled($0) }
@@ -254,15 +261,6 @@ struct PreferencesView: View {
             }
         }
     }
-    
-    private func showTouchIDInfo() {
-        let alert = NSAlert()
-        alert.messageText = "How Touch ID Unlock Works"
-        alert.informativeText = "Because HammerTime blocks all keyboard and mouse inputs globally to secure your Mac, background apps cannot directly monitor the Touch ID sensor.\n\nTo use Touch ID:\n1. Lock HammerTime.\n2. When you return, click the screen or press the Spacebar or Return key.\n3. The warning overlay will appear, temporarily suspend input-swallowing, and display the macOS system Touch ID prompt on top.\n4. Scan your fingerprint to unlock!"
-        alert.alertStyle = .informational
-        alert.addButton(withTitle: "Got it")
-        alert.runModal()
-    }
 }
 
 // Deterrent Card containing the captured intruder photo and warning messages
@@ -325,7 +323,7 @@ struct DeterrentCardView: View {
                         .foregroundColor(.secondary)
                     
                     if HammerTimeManager.shared.canUseBiometrics() && HammerTimeManager.shared.isBiometricsEnabled {
-                        Text("Type keyphrase, click screen, or press Space to use Touch ID.")
+                        Text("Type keyphrase to unlock, or click screen to deactivate with Touch ID.")
                             .font(.body)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
