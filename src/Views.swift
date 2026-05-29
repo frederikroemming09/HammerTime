@@ -327,6 +327,8 @@ struct DeterrentCardView: View {
                             .font(.body)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
+                            .lineLimit(nil)
+                            .fixedSize(horizontal: false, vertical: true)
                     } else {
                         Text("Type the secret keyphrase to unlock.")
                             .font(.body)
@@ -354,7 +356,7 @@ struct DeterrentView: View {
         ZStack {
             DeterrentCardView(image: image)
                 .shadow(color: Color.black.opacity(0.5), radius: 30, x: 0, y: 15)
-                .frame(width: 480, height: 500)
+                .frame(width: 480)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.clear)

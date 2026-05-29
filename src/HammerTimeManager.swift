@@ -305,7 +305,7 @@ class HammerTimeManager: NSObject {
     private func saveImageToDesktop(cameraImage: NSImage?) {
         // Create the warning card view without the unlock instructions
         let cardWidth: CGFloat = 500
-        let cardHeight: CGFloat = 500
+        let cardHeight: CGFloat = 550
         let scale: CGFloat = 3.0 // 3x high-resolution rendering
         
         let cardView = DeterrentCardView(image: cameraImage, showUnlockInstructions: false)
