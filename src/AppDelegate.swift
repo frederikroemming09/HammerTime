@@ -204,7 +204,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         for screen in NSScreen.screens {
             let frame = screen.frame
-            let window = NSWindow(
+            let window = DeterrentWindow(
                 contentRect: frame,
                 styleMask: [.borderless, .fullSizeContentView],
                 backing: .buffered,
@@ -288,5 +288,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func closeConfettiWindow() {
         confettiWindow?.orderOut(nil)
         confettiWindow = nil
+    }
+}
+
+class DeterrentWindow: NSWindow {
+    override var canBecomeKey: Bool {
+        return true
+    }
+    
+    override var canBecomeMain: Bool {
+        return true
+    }
+    
+    override func keyDown(with event: NSEvent) {
+        // Forward keyboard event to keyphrase handler as a failsafe
+        EventTapManager.shared.handleKeyPressExternal(nsEvent: event)
     }
 }

@@ -6,6 +6,16 @@
         <description>Most recent updates for HammerTime.</description>
         <language>en</language>
         <item>
+            <title>Version 1.1.5</title>
+            <sparkle:releaseNotesLink>https://github.com/frederikroemming09/HammerTime/releases</sparkle:releaseNotesLink>
+            <pubDate>Fri, 19 Jun 2026 07:35:00 +0200</pubDate>
+            <enclosure url="https://github.com/frederikroemming09/HammerTime/releases/download/v1.1.5/HammerTime.dmg"
+                       sparkle:version="7"
+                       sparkle:shortVersionString="1.1.5"
+                       length="4833473"
+                       type="application/octet-stream" />
+        </item>
+        <item>
             <title>Version 1.1.4</title>
             <sparkle:releaseNotesLink>https://github.com/frederikroemming09/HammerTime/releases</sparkle:releaseNotesLink>
             <pubDate>Fri, 29 May 2026 11:28:00 +0200</pubDate>

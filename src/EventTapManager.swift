@@ -200,6 +200,11 @@ class EventTapManager: NSObject {
         }
     }
     
+    func handleKeyPressExternal(nsEvent: NSEvent) {
+        let now = Date()
+        handleKeyPress(nsEvent: nsEvent, time: now)
+    }
+    
     private func handleEvent(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
         if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
             if let tap = eventTap {

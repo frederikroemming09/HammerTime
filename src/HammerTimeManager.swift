@@ -248,6 +248,9 @@ class HammerTimeManager: NSObject {
         // Lower deterrent window level to let Touch ID prompt display on top of it
         self.appDelegate?.setDeterrentWindowsLevel(.floating)
         
+        // Ensure the app is active and frontmost before evaluating policy
+        NSApp.activate(ignoringOtherApps: true)
+        
         let context = LAContext()
         let reason = "Unlock HammerTime"
         
