@@ -6,6 +6,41 @@
         <description>Most recent updates for HammerTime.</description>
         <language>en</language>
         <item>
+            <title>Version 1.2.0</title>
+            <description><![CDATA[
+                <style>
+                    :root { color-scheme: light dark; }
+                    body { font: 13px -apple-system, sans-serif; line-height: 1.45; margin: 4px 2px; }
+                    h2 { font-size: 17px; margin: 0 0 6px; }
+                    h3 { font-size: 13px; margin: 16px 0 4px; }
+                    p { margin: 0 0 8px; }
+                    ol, ul { margin: 0 0 8px; padding-left: 20px; }
+                    li { margin-bottom: 3px; }
+                    .muted { opacity: 0.7; }
+                </style>
+                <h2>🫥 New: Blur Screen</h2>
+                <p>Step away from your Mac without leaving your inbox, messages or code on display.</p>
+                <p>With <b>Blur Screen</b> turned on, HammerTime covers every display with frosted glass while it's active. People walking by can't read your screen, and HammerTime still catches anyone who touches your Mac.</p>
+                <h3>How to turn it on</h3>
+                <ol>
+                    <li>Click the 🔨 in the menu bar and open <b>Settings</b>.</li>
+                    <li>Under <b>While Active</b>, switch on <b>Blur Screen</b>.</li>
+                    <li>Click <b>Preview</b> to see what others will see.</li>
+                </ol>
+                <p class="muted">Off by default, so your lock stays invisible unless you turn it on. No new permissions needed.</p>
+                <h3>✨ Also in this update</h3>
+                <ul>
+                    <li>A tidier Settings window: Blur Screen and Touch ID now sit together under <b>While Active</b>.</li>
+                </ul>
+            ]]></description>
+            <pubDate>Thu, 08 Oct 2026 08:51:00 +0200</pubDate>
+            <enclosure url="https://github.com/frederikroemming09/HammerTime/releases/download/v1.2.0/HammerTime.dmg"
+                       sparkle:version="8"
+                       sparkle:shortVersionString="1.2.0"
+                       length="4893992"
+                       type="application/octet-stream" />
+        </item>
+        <item>
             <title>Version 1.1.5</title>
             <sparkle:releaseNotesLink>https://github.com/frederikroemming09/HammerTime/releases</sparkle:releaseNotesLink>
             <pubDate>Fri, 19 Jun 2026 07:35:00 +0200</pubDate>

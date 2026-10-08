@@ -59,6 +59,7 @@ To tell currently installed apps that a new update is available, edit the update
    * `<title>`: E.g., `Version 1.1`.
    * `<pubDate>`: The current date and time (standard RSS format, e.g., `Fri, 29 May 2026 12:00:00 +0200`).
    * `<enclosure>`: Update the `url` to the new GitHub Release download link, set `sparkle:version` to the new build number, set `sparkle:shortVersionString` to the new user-facing version, and set `length` to the file size in bytes you noted down in Step 2.
+   * `<description>`: Write the release notes as HTML inside `<![CDATA[ ... ]]>`. Sparkle shows them directly in the update prompt. Leave out `<sparkle:releaseNotesLink>`; when it is present, Sparkle loads that page instead of the inline notes. See the `Version 1.2.0` item in `appcast.xml` for a styled example.
 4. Save (commit) the changes to the `appcast.xml` file on GitHub.
 
 #### Example `appcast.xml` with two versions:
