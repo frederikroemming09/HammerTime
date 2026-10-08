@@ -12,6 +12,7 @@ struct PreferencesView: View {
     @State private var isAccessibilityGranted: Bool = AXIsProcessTrusted()
     @State private var isCameraGranted: Bool = AVCaptureDevice.authorizationStatus(for: .video) == .authorized
     @State private var isCameraAvailable: Bool = CameraManager.shared.isCameraAvailable
+    @State private var isPrivacyBlurEnabled: Bool = HammerTimeManager.shared.isPrivacyBlurEnabled
     @State private var testCountdown: Int = 0
     @State private var timer: Timer? = nil
     
@@ -63,42 +64,52 @@ struct PreferencesView: View {
             .background(colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
             .cornerRadius(10)
             
-            // Touch ID Card (only if biometrics are supported on the device)
-            if HammerTimeManager.shared.canUseBiometrics() {
-                HStack(alignment: .center, spacing: 8) {
-                    Image(systemName: "touchid")
-                        .font(.system(size: 14))
-                        .foregroundColor(.secondary)
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(alignment: .center, spacing: 4) {
-                            Text("Deactivate with Touch ID")
-                                .font(.system(size: 12))
-                                .foregroundColor(.primary)
-                                .lineLimit(nil)
-                                .fixedSize(horizontal: false, vertical: true)
+            // While Active Card (protection options that apply while the lock is on)
+            VStack(alignment: .leading, spacing: 12) {
+                Text("WHILE ACTIVE")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(.secondary)
+                    .tracking(1)
+                
+                SettingToggleRow(
+                    icon: "eye.slash",
+                    title: "Blur Screen",
+                    subtitle: "Hides your windows behind frosted glass so no one can read your screen.",
+                    isOn: $isPrivacyBlurEnabled
+                ) {
+                    Button(action: { PrivacyBlurManager.shared.preview() }) {
+                        HStack(spacing: 3) {
+                            Image(systemName: "play.circle.fill")
+                            Text("Preview")
                         }
-                        Text("Prompts on intruder screen after taking action.")
-                            .font(.system(size: 10))
-                            .foregroundColor(.secondary)
-                            .lineLimit(nil)
-                            .fixedSize(horizontal: false, vertical: true)
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(.accentColor)
                     }
-                    
-                    Spacer()
-                    
-                    Toggle("", isOn: Binding(
-                        get: { HammerTimeManager.shared.isBiometricsEnabled },
-                        set: { HammerTimeManager.shared.setBiometricsEnabled($0) }
-                    ))
-                    .toggleStyle(.switch)
-                    .controlSize(.small)
-                    .labelsHidden()
+                    .buttonStyle(.plain)
+                    .help("Show the blur for a few seconds")
                 }
-                .padding(12)
-                .background(colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
-                .cornerRadius(10)
+                .onChange(of: isPrivacyBlurEnabled) { oldValue, newValue in
+                    HammerTimeManager.shared.setPrivacyBlurEnabled(newValue)
+                }
+                
+                // Touch ID (only if biometrics are supported on the device)
+                if HammerTimeManager.shared.canUseBiometrics() {
+                    Divider()
+                    
+                    SettingToggleRow(
+                        icon: "touchid",
+                        title: "Deactivate with Touch ID",
+                        subtitle: "Prompts on intruder screen after taking action.",
+                        isOn: Binding(
+                            get: { HammerTimeManager.shared.isBiometricsEnabled },
+                            set: { HammerTimeManager.shared.setBiometricsEnabled($0) }
+                        )
+                    )
+                }
             }
+            .padding(12)
+            .background(colorScheme == .dark ? Color.white.opacity(0.06) : Color.black.opacity(0.04))
+            .cornerRadius(10)
             
             // Permissions Card
             VStack(alignment: .leading, spacing: 12) {
@@ -422,6 +433,60 @@ struct ConfettiParticleView: View {
                     opacity = 0.0
                 }
             }
+    }
+}
+
+// Icon + title + description row with a trailing switch, used for on/off settings
+struct SettingToggleRow<Accessory: View>: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    @Binding var isOn: Bool
+    let accessory: Accessory
+    
+    init(icon: String, title: String, subtitle: String, isOn: Binding<Bool>, @ViewBuilder accessory: () -> Accessory) {
+        self.icon = icon
+        self.title = title
+        self.subtitle = subtitle
+        self._isOn = isOn
+        self.accessory = accessory()
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+                .frame(width: 18)
+                .padding(.top, 1)
+            
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.system(size: 12))
+                    .foregroundColor(.primary)
+                
+                Text(subtitle)
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                accessory
+                    .padding(.top, 2)
+            }
+            
+            Spacer(minLength: 8)
+            
+            Toggle("", isOn: $isOn)
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .labelsHidden()
+        }
+    }
+}
+
+extension SettingToggleRow where Accessory == EmptyView {
+    init(icon: String, title: String, subtitle: String, isOn: Binding<Bool>) {
+        self.init(icon: icon, title: title, subtitle: subtitle, isOn: isOn) { EmptyView() }
     }
 }
 

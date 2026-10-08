@@ -16,6 +16,7 @@ class HammerTimeManager: NSObject {
     
     private let keyphraseKey = "HammerTimeSecretKeyphrase"
     private let biometricsEnabledKey = "HammerTimeBiometricsEnabled"
+    private let privacyBlurEnabledKey = "HammerTimePrivacyBlurEnabled"
     private var isAuthenticatingWithBiometrics = false
     
     private var hotKeyRef: EventHotKeyRef?
@@ -57,6 +58,16 @@ class HammerTimeManager: NSObject {
     func setBiometricsEnabled(_ enabled: Bool) {
         UserDefaults.standard.set(enabled, forKey: biometricsEnabledKey)
         print("[Manager] Biometrics enabled state set to: \(enabled)")
+    }
+    
+    // Privacy blur is off by default so the lock stays invisible unless the user opts in
+    var isPrivacyBlurEnabled: Bool {
+        return UserDefaults.standard.bool(forKey: privacyBlurEnabledKey)
+    }
+    
+    func setPrivacyBlurEnabled(_ enabled: Bool) {
+        UserDefaults.standard.set(enabled, forKey: privacyBlurEnabledKey)
+        print("[Manager] Privacy blur enabled state set to: \(enabled)")
     }
     
     func canUseBiometrics() -> Bool {
@@ -192,6 +203,11 @@ class HammerTimeManager: NSObject {
         // Start CGEventTap input swallowing
         EventTapManager.shared.start()
         
+        // Hide screen contents if the user opted into privacy blur
+        if isPrivacyBlurEnabled {
+            PrivacyBlurManager.shared.show()
+        }
+        
         // Trigger hammer emoji confetti animation on main screen
         appDelegate?.showActivationConfetti()
         
@@ -215,6 +231,9 @@ class HammerTimeManager: NSObject {
         
         // Close overlay window
         appDelegate?.closeDeterrentOverlay()
+        
+        // Remove privacy blur
+        PrivacyBlurManager.shared.hide()
         
         // Update menu bar icon
         appDelegate?.updateStatusItem()
@@ -247,6 +266,7 @@ class HammerTimeManager: NSObject {
         
         // Lower deterrent window level to let Touch ID prompt display on top of it
         self.appDelegate?.setDeterrentWindowsLevel(.floating)
+        PrivacyBlurManager.shared.setLowered(true)
         
         // Ensure the app is active and frontmost before evaluating policy
         NSApp.activate(ignoringOtherApps: true)
@@ -261,6 +281,7 @@ class HammerTimeManager: NSObject {
                 
                 // Restore deterrent window level to .screenSaver to keep screen covered
                 self.appDelegate?.setDeterrentWindowsLevel(.screenSaver)
+                PrivacyBlurManager.shared.setLowered(false)
                 
                 if success {
                     print("[Manager] Biometric/Password authentication succeeded. Unlocking HammerTime.")

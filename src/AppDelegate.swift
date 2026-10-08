@@ -150,6 +150,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 HammerTimeManager.shared.deactivateLock()
             case "settings":
                 self.showPreferencesWindow()
+            case "preview-blur":
+                PrivacyBlurManager.shared.preview()
             default:
                 break
             }
