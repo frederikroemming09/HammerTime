@@ -6,6 +6,30 @@
         <description>Most recent updates for HammerTime.</description>
         <language>en</language>
         <item>
+            <title>Version 1.2.1</title>
+            <description><![CDATA[
+                <style>
+                    :root { color-scheme: light dark; }
+                    body { font: 13px -apple-system, sans-serif; line-height: 1.45; margin: 4px 2px; }
+                    h2 { font-size: 17px; margin: 0 0 6px; }
+                    p { margin: 0 0 8px; }
+                    ul { margin: 0 0 8px; padding-left: 20px; }
+                    li { margin-bottom: 3px; }
+                </style>
+                <h2>🛠️ Runs on more Macs again</h2>
+                <ul>
+                    <li>Fixed: HammerTime 1.2.0 wouldn't open on macOS 26 and earlier ("You can't use this version of the application with this version of macOS"). HammerTime runs on macOS 13 Ventura and later again.</li>
+                    <li>HammerTime now runs natively on Intel Macs as well as Apple silicon.</li>
+                </ul>
+            ]]></description>
+            <pubDate>Tue, 27 Oct 2026 12:00:00 +0100</pubDate>
+            <enclosure url="https://github.com/frederikroemming09/HammerTime/releases/download/v1.2.1/HammerTime.dmg"
+                       sparkle:version="9"
+                       sparkle:shortVersionString="1.2.1"
+                       length="5244050"
+                       type="application/octet-stream" />
+        </item>
+        <item>
             <title>Version 1.2.0</title>
             <description><![CDATA[
                 <style>

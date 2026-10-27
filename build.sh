@@ -20,20 +20,34 @@ mkdir -p "${FRAMEWORKS_DIR}"
 SDK_PATH=$(xcrun --show-sdk-path)
 echo "Using SDK: ${SDK_PATH}"
 
-# Compile all Swift files in src/ linking against Sparkle
-echo "Compiling Swift source files..."
-swiftc \
-  -sdk "${SDK_PATH}" \
-  -framework Cocoa \
-  -framework SwiftUI \
-  -framework AVFoundation \
-  -framework IOKit \
-  -framework LocalAuthentication \
-  -F Frameworks \
-  -framework Sparkle \
-  -Xlinker -rpath -Xlinker @executable_path/../Frameworks \
-  -o "${MAC_OS_DIR}/${APP_NAME}" \
-  src/*.swift
+# Deployment target must match LSMinimumSystemVersion in Info.plist. Without an
+# explicit -target, swiftc defaults to the build machine's macOS version and the
+# app refuses to launch on anything older.
+MIN_MACOS=$(/usr/libexec/PlistBuddy -c "Print :LSMinimumSystemVersion" Info.plist)
+ARCHS="arm64 x86_64"
+BUILD_TMP=$(mktemp -d)
+trap 'rm -rf "${BUILD_TMP}"' EXIT
+
+# Compile all Swift files in src/ linking against Sparkle, once per architecture
+for ARCH in ${ARCHS}; do
+  echo "Compiling Swift source files for ${ARCH} (macOS ${MIN_MACOS}+)..."
+  swiftc \
+    -target "${ARCH}-apple-macos${MIN_MACOS}" \
+    -sdk "${SDK_PATH}" \
+    -framework Cocoa \
+    -framework SwiftUI \
+    -framework AVFoundation \
+    -framework IOKit \
+    -framework LocalAuthentication \
+    -F Frameworks \
+    -framework Sparkle \
+    -Xlinker -rpath -Xlinker @executable_path/../Frameworks \
+    -o "${BUILD_TMP}/${APP_NAME}-${ARCH}" \
+    src/*.swift
+done
+
+echo "Creating universal binary..."
+lipo -create -output "${MAC_OS_DIR}/${APP_NAME}" "${BUILD_TMP}/${APP_NAME}"-*
 
 # Copy Info.plist
 echo "Copying Info.plist..."

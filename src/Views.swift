@@ -52,7 +52,7 @@ struct PreferencesView: View {
                 
                 TextField("Enter keyphrase", text: $keyphrase)
                     .textFieldStyle(.roundedBorder)
-                    .onChange(of: keyphrase) { oldValue, newValue in
+                    .onChange(of: keyphrase) { newValue in
                         HammerTimeManager.shared.setKeyphrase(newValue)
                     }
                 
@@ -88,7 +88,7 @@ struct PreferencesView: View {
                     .buttonStyle(.plain)
                     .help("Show the blur for a few seconds")
                 }
-                .onChange(of: isPrivacyBlurEnabled) { oldValue, newValue in
+                .onChange(of: isPrivacyBlurEnabled) { newValue in
                     HammerTimeManager.shared.setPrivacyBlurEnabled(newValue)
                 }
                 
